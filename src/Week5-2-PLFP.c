@@ -1,41 +1,112 @@
 #include <stdio.h>
 
-
 // // ---------------------------------------------------------------------------
 // // Finite Precision (Rounding Errors)
 int main() {
-    float a = 0.1;
-    double b = 0.1;
+    printf("size of float: %zu\n",sizeof(float));
+    printf("size of double: %zu\n",sizeof(double));
+    printf("size of long double: %zu\n",sizeof(long double));
 
-    printf("Float a  = %.20f\n", a);
-    printf("Double b = %.20lf\n", b);
+    float a = 0.1f;
+    double b = 0.1;
+    long double c = 0.1;
+
+    printf("float a  = %.20f\n", a);
+    printf("double b = %.20lf\n", b);
+    printf("long double c = %.20Lf\n", c);
 
     // The addition of these numbers obviously can create rounding errors:
-    printf("a+b = %.20lf\n", a+b);
-
+    printf("b+c = %.20Lf\n", b+c);
     return 0;
 }
-
 // Float a  = 0.10000000149011611938
 // Double b = 0.10000000000000000555
 // a+b = 0.20000000149011612494
 
 // // ---------------------------------------------------------------------------
-// // Accumulation of Errors:
+// Accumulation of Errors:
 // int main() {
-//     float sum = 0.0;
+//     float sum = 0.0f;
 //     for (int i = 0; i < 1000000; i++) {
 //         sum += 0.0001;  // Adding a small value repeatedly (the small value already has round-off)
 //     }
 
 //     printf("Expected: 100.0\n");
-//     printf("Actual  : %.10f\n", sum);
+//     printf("Actual  : %.20f\n", sum);
 
 //     return 0;
 // }
 
-// Expected: 100.0
-// Actual  : 99.3273086548
+// Solutions
+// 0) Switch to double
+// int main() {
+//     double sum = 0.0;
+//     for (int i = 0; i < 1000000; i++) {
+//         sum += 0.0001;  // Adding a small value repeatedly (the small value already has round-off)
+//     }
+//     printf("Expected: 100.0\n");
+//     printf("Actual  : %.20lf\n", sum);
+//     return 0;
+// }
+// 1) Rearrange calc: Since adding a constant value, not relevant for this example
+// But in general, you could sort an array in ascending order and add in order of smallest -> greatest
+// int main() {
+//     float sum = 0.0f;
+//     float sum2 = 0.0f;
+//     double sum3 = 0.0;
+
+//     // UNSORTED: Large values first, small values last (small values get lost)
+//     float arr[] = {10000000.0f, 0.5f, 0.5f, 0.5f, 0.5f}; 
+
+//     // SORTED: Small values first (they accumulate before large values are added)
+//     // By the way, stdlib.h has a built-in qsort() if you want to sort a large array
+//     float arr2[] = {0.5f, 0.5f, 0.5f, 0.5f, 10000000.0f}; 
+
+//     for (int i = 0; i < 6; i++) {
+//         sum += arr[i];    // Naive summation: small values lost after large ones
+//         sum2 += arr2[i];  // Small values summed first
+//         sum3 += arr[i];   // More precise summation in double
+//     }
+//     printf("Unsorted sum (float): %.20f\n", sum);
+//     printf("  Sorted sum (float): %.20f\n", sum2);
+//     printf("Precise sum (double): %.20lf\n", sum3);
+//     return 0;
+// }
+
+// 2) Kahan's Summation Algo
+// int main() {
+//     float sum = 0.0f;
+//     float compensation = 0.0f; // Tracks lost precision
+//     double val = 0.0001;
+//     for (int i = 0; i < 1000000; i++) {
+//         float y = val - compensation;    // Adjust value with previous error
+//         float t = sum + y;               // New sum
+//         compensation = (t - sum) - y;    // Calculate new error
+//         sum = t;
+//     }
+//     printf("Actual: %.10f\n", sum); // 100.000000
+// }
+
+// 3) Pairwise Summation -- Costly in memory (extra arr + recursive stack)
+// float pairwise_sum(float arr[], int n) {
+//   if (n == 1) return arr[0];
+//   int mid = n / 2;
+//   return pairwise_sum(arr, mid) + pairwise_sum(arr + mid, n - mid);
+//   // first sum is 0.0001 + 0.0001 (n/2 times)
+//   // then 0.0002 + 0.0002 (n/4 times)
+//   // 0.0004 + 0.0004 (n/8 times)
+//   // ...
+// }
+// int main() {
+//     float arr[1000000];
+//     float val = 0.0001f;
+//     for (int i=0; i<1000000; i++) {
+//         arr[i] = val;
+//     }
+//     float sum = pairwise_sum(arr, 1000000);
+//     printf("Actual: %.20f\n", sum); // 100.000000
+// }
+
 // // ---------------------------------------------------------------------------
 // // // Catastrophic Cancellation:
 
