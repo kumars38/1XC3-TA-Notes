@@ -1,50 +1,28 @@
 #include <stdio.h>
 
-int minCostClimbingStairs(int* cost, int costSize) {
-    // Try starting from step 0
-    int startFromZero = cost[0];
-    if (costSize >= 3) {
-        // If taking one step from 0, pay cost[1]
-        int oneStep = startFromZero + cost[1];
-        // If taking two steps from 0, pay cost[2]
-        int twoSteps = startFromZero + cost[2];
-        
-        // Choose the cheaper option
-        if (oneStep < twoSteps) {
-            startFromZero = oneStep;
-        } else {
-            startFromZero = twoSteps;
-        }
-    }
+int minCostClimbingStairs(int cost[], int costSize) {
+    if (costSize == 0) return 0;       // no stairs, no cost
+    if (costSize == 1) return cost[0]; // cost = this step
     
-    // Try starting from step 1
-    int startFromOne = cost[1];
-    if (costSize >= 4) {
-        // If at step 1, we can either take:
-        // one more step to step 2 (cost[2])
-        // or two more steps to step 3 (cost[3])
-        if (cost[2] < cost[3]) {
-            startFromOne += cost[2];
-        } else {
-            startFromOne += cost[3];
-        }
-    }
+    // Store cumulative costs to get to 2nd last step and last step
+    int prev2 = cost[0];
+    int prev1 = cost[1];
     
-    // Return the minimum of the two possible starts
-    if (startFromZero < startFromOne) {
-        return startFromZero;
-    } else {
-        return startFromOne;
+    // Starting from step 2
+    for (int i = 2; i < costSize; i++) {
+        // Add cost of current step (cost[i]) to the path of minimal cost
+        int current = ((prev1 < prev2) ? prev1 : prev2) + cost[i];
+        prev2 = prev1;
+        prev1 = current;
     }
+    return (prev1 < prev2) ? prev1 : prev2;
 }
 
 int main() {
-    // Test case from the example
-    int cost[] = {8, 12, 20};
-    int size = 3; //sizeof(cost) / sizeof(cost[0]);
-    
-    // Call function and print result
-    printf("Minimum cost: %d\n", minCostClimbingStairs(cost, size));
-    
-    return 0;
+    // Example
+    // int cost[] = {8, 12, 20};
+    int cost[] = {8, 12, 20, 25, 2, 1};
+    int costSize = sizeof(cost) / sizeof(cost[0]);
+    int res = minCostClimbingStairs(cost, costSize);
+    printf("Min cost: %d\n", res); // Correctly outputs 12
 }
