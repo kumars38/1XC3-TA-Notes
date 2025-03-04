@@ -1,0 +1,358 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+
+\lstdefinestyle{latexstyle}{
+	language={[LaTeX]TeX},
+	basicstyle=\ttfamily,
+	backgroundcolor=\color{blue!5},
+	keywordstyle=\color{blue},
+	commentstyle=\color{codegreen},
+	stringstyle=\color{red},
+	showstringspaces=false,
+	breaklines=true,
+	frame=single,
+	rulecolor=\color{lightgray!35}, % Set the color of the frame
+	numbers=none,
+	numberstyle=\tiny,
+	numbersep=5pt,
+	tabsize=1,
+	morekeywords={documentclass, usepackage, begin, end},
+}
+\hypersetup{
+colorlinks=true,
+linkcolor=blue,
+filecolor=magenta,
+urlcolor=cyan,
+}
+\lstset{
+basicstyle=\ttfamily\small,
+keywordstyle=\color{blue},
+commentstyle=\color{green!60!black},
+stringstyle=\color{red},
+breaklines=true,
+frame=single,
+%numbers=left,
+%numberstyle=\tiny\color{gray},
+%numbersep=5pt,
+showstringspaces=false
+}
+\title{Intro to LaTeX}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Why Use LaTeX?}
+Similar to how you write C code then tell the compiler (ex. gcc) to convert it into an executable, you can write LaTeX instructions to a .tex file, then compile it into a PDF document.
+So, it is fundamentally different from editors you've used before like MS Word and Google Docs. Instead of formatting things on-the-fly, you write formatting commands that get compiled into documents robustly.
+
+\subsection{Benefits}
+\begin{itemize}
+  \item \textbf{Professional Quality}: Used for things like academic papers, research, and technical documents. You've probably noticed some profs prepare their lecture slideshows using LaTeX.
+  \item \textbf{Templates}: Sometimes you can start from a given template (.tex file) and fill in the rest. The benefit is that formatting commands are already there, so you just have to fill in the content, and you get a nice looking document.
+  For example, I'd recommend using a LaTeX template for your resume. It will probably look better and also be picked up by resume screening tools better than Google Docs/Word.
+  \item \textbf{Styles}: Similar to templates, you can create custom styles and copy-paste them across .tex files for easy re-use. For example, the style for a code block in C.
+  \item \textbf{Math Support}: Lots of commands for formatting math equations, both inline and in separate blocks.
+  \item \textbf{Automation}: Handles table of contents, references, numbering, etc. automatically
+\end{itemize}
+
+\section{Installation and Setup}
+Note, we'll dicuss how you can setup/use LaTeX on your local devices. An alternative could be to use online software like Overleaf. It's up to you which one you want to use, but I've found that VS Code on my local device with the LaTeX Workshop extension is pretty efficient. On a software team, you would likely use LaTeX with Git, so you get the benefits of collaboration and version control. However, Overleaf can be useful if you want to work on a shared professional document (ex. research paper) with collaborators who are not familiar with Git.
+
+\subsection{Linux/WSL}
+I don't recommend instaling all packages (texlive-full), as it's about 6 GB and you won't need most of it. Instead, you can run the following in the terminal to get most of the widely used packages and fonts (this is 670 MB):
+\begin{lstlisting}[language=bash]
+# In terminal
+sudo apt install texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended
+
+# If that's too large, you can try only getting the base packages
+sudo apt install texlive-latex-base
+
+# Verify the install in terminal
+latex --version
+
+# Create a .tex file using an editor (or do this through VS Code interface)
+nano file.tex
+
+# when you want to compile to PDF run:
+pdflatex file.tex
+
+# You should see a bunch of files appear like file.aux, file.log, ..., you can ignore those, and just focus on file.pdf
+\end{lstlisting}
+
+\subsection{On MacOS:}
+Mac users can use MacTex (\url{https://tug.org/mactex/}).
+Or you can use a smaller version (basicTex) and add the packages you actually need:
+\begin{lstlisting}[language=bash]
+# Using Homebrew
+brew install --cask basictex
+
+# Add packages using TeX Live Manager (tlmgr)
+# Update the package manager first
+sudo tlmgr update --self
+
+# Install recommended packages similar to texlive-latex-recommended
+sudo tlmgr install collection-latexrecommended
+
+# Install extra packages if needed
+sudo tlmgr install collection-latexextra
+
+# Install specific packages
+sudo tlmgr install <package-name>
+\end{lstlisting}
+If you have the space and want the full MacTex:
+\begin{lstlisting}[language=bash]
+# Using Homebrew
+brew install --cask mactex
+\end{lstlisting}
+
+\subsection{VS Code Integration}
+I highly recommend getting the VS Code \textbf{LaTeX Workshop} extension:
+\begin{enumerate}
+  \item Search for the LaTeX Workshop extension in VS Code Extensions and install it
+  \item You should see 'Build LaTeX Project' and 'View LaTeX PDF file' options appear in the top right of VS Code (next to Run Code)
+  \item You can use shortcuts for these: Build (Ctrl+Alt+B) and Preview (Ctrl+Alt+V)
+  \item Every time you edit and save your .tex file, changes are automatically reflected in the preview PDF
+\end{enumerate}
+
+\section{LaTeX Overview}
+
+\subsection{Document Structure}
+
+Every LaTeX document follows this basic structure:
+\begin{lstlisting}[style=latexstyle]
+\documentclass[12pt]{article}
+\usepackage{amsmath}
+\usepackage{graphicx}
+
+\title{Document Title}
+\author{Your Name}
+\date{\today}
+
+\begin{document}
+\maketitle        % Creates the title
+\tableofcontents  % Optional
+
+% Your content here with sections
+\section{Introduction}
+Some text...
+
+% Other sections etc.
+...
+
+\end{document}
+\end{lstlisting}
+
+\subsection{Common Document Elements}
+
+\subsubsection{Sections and Paragraphs}
+\begin{lstlisting}[style=latexstyle]
+\section{Main Section}
+\subsection{Sub Section}
+\subsubsection{Sub Sub Section}
+
+This is a paragraph.
+
+This is another paragraph.
+\end{lstlisting}
+
+\subsubsection{Text Formatting}
+\textbf{Bold} 
+\textit{Italic} 
+\underline{Underlined} 
+\texttt{Monospace}
+\begin{lstlisting}[style=latexstyle]
+\textbf{Bold} 
+\textit{Italic} 
+\underline{Underlined} 
+\texttt{Monospace}
+\end{lstlisting}
+
+\subsubsection{Math Content}
+Inline math: $E = mc^2$\\
+Display math:
+$$E = mc^2$$
+Numbered equation:
+\begin{equation}
+E = mc^2
+\end{equation}
+\begin{lstlisting}[style=latexstyle]
+Inline math: $E = mc^2$
+
+Display math:
+$$E = mc^2$$
+
+Numbered equation:
+\begin{equation}
+E = mc^2
+\end{equation}
+\end{lstlisting}
+
+\subsubsection{Lists}
+\begin{itemize}  % Bulleted list
+  \item First item
+  \item Second item
+\end{itemize}
+
+\begin{enumerate}  % Numbered list
+  \item First item
+  \item Second item
+  \begin{enumerate}
+      \item sub item 1
+      \item sub item 2
+      \item ...
+  \end{enumerate}
+\end{enumerate}
+\begin{lstlisting}[style=latexstyle]
+\begin{itemize}  % Bulleted list
+  \item First item
+  \item Second item
+\end{itemize}
+
+\begin{enumerate}  % Numbered list
+  \item First item
+  \item Second item
+  \begin{enumerate}
+      \item sub item 1
+      \item sub item 2
+      \item ...
+  \end{enumerate}
+\end{enumerate}
+\end{lstlisting}
+
+\subsubsection{Tables}
+\begin{table}[H]
+  \centering
+  \caption{Test Table}
+  \vspace{2mm}
+  \begin{tabular}{|l|c|r|}  % Left, center, right aligned columns
+    \hline
+    A & B & C \\
+    \hline
+    1 & 2 & 3 \\
+    4 & 5 & 6 \\
+    \hline
+  \end{tabular}
+\end{table}
+\begin{lstlisting}[style=latexstyle]
+% See how the table is constructed row by row
+% Also note the [H] and \vspace for positioning
+
+\begin{table}[H]
+  \centering
+  \caption{Test Table}
+  \vspace{2mm}
+  \begin{tabular}{|l|c|r|}  % Left, center, right aligned columns
+    \hline
+    A & B & C \\
+    \hline
+    1 & 2 & 3 \\
+    4 & 5 & 6 \\
+    \hline
+  \end{tabular}
+\end{table}
+\end{lstlisting}
+
+\subsubsection{Figures}
+\begin{lstlisting}[style=latexstyle]
+\begin{figure}
+  \centering
+  \includegraphics[width=0.7\textwidth]{image.png}
+  \caption{An example image.}
+  \label{fig:example}
+\end{figure}
+\end{lstlisting}
+Reference the figure with \verb|\ref{fig:example}|. You can put the image file in the same folder as your .tex file, or put it in a subfolder and provide the relative path. Also, you can use figures for plots, so you don't need to bother learning plot commands in LaTeX. Basically, you can just export the plot png/jpeg from other software like Python and load it as a figure in LaTeX.
+
+\subsubsection{Code Blocks}
+You can provide the language for the code block so that relevant strings can be highlighted. You can also create custom styles for different languages, and display them differently. For example, compare the LaTeX code blocks in this doc to the following C code block.
+\begin{lstlisting}[language=C]
+int main() {
+    printf("Hello, World!");
+    return 0;
+}
+\end{lstlisting}
+
+\begin{lstlisting}[style=latexstyle]
+\usepackage{listings}
+
+\begin{lstlisting}[language=C]
+int main() {
+    printf("Hello, World!");
+    return 0;
+}
+end{lstlisting}
+\end{lstlisting}
+
+\subsubsection{Bibliography}
+Create a .bib file with your references:
+\begin{lstlisting}[style=latexstyle]
+@article{kumar2025,
+  author  = {Kumar, Samarth},
+  title   = {Some Paper},
+  journal = {Some Journal},
+  year    = {2025}
+}
+\end{lstlisting}
+In your main document:
+\begin{lstlisting}[style=latexstyle]
+\cite{kumar2025} showed that...
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{lstlisting}
+Compile with: \texttt{pdflatex file.tex}, \texttt{bibtex file}, \texttt{pdflatex file.tex} (twice)
+
+\section{Exercise: Code Documentation With LaTeX}
+
+In this exercise, you will create a LaTeX document that includes a C program along with documentation of your approach and test cases.
+
+\subsection{Task in C}
+Write a C program that checks if a given string is a palindrome. A palindrome reads the same forward and backward (ex. "racecar"). You can also consider an empty string as a palindrome. You can assume strings are empty or composed of lowercase letters only. Your program should:
+\begin{itemize}
+    \item create an \texttt{isPalindrome()} function which takes a string as input. The return type should be \texttt{bool}.
+    \item Include an array of strings called \texttt{testStrings} in \texttt{main()}.
+        
+    Recall: a string is really an array of characters. So an array of strings can be thought of as a 2D char array. In C, we can use the following. The first approach requires knowing the max length of strings within the array (but entries are modifiable). The second approach makes the strings \textbf{read-only}. You can also use \texttt{malloc} for dynamic allocation (not shown here).
+    \begin{itemize}
+        \item \texttt{char testStrings[][MAX\_STR\_LEN] = \{...\};}
+        \item \texttt{const char* testStrings[] = \{...\};}
+    \end{itemize}
+    \item Loop over testStrings, passing each test string into the isPalindrome() function, and print each input/output result on a new line.
+    \begin{itemize}
+        \item Use the \href{https://www.geeksforgeeks.org/conditional-or-ternary-operator-in-c/}{ternary operator} to print "true" or "false" inside \texttt{printf} based on your isPalindrome() result
+    \end{itemize}
+\end{itemize}
+\textbf{Bonus}: try implementing \texttt{bool isPalindromeNum(int n)}, which takes an integer input instead of string, and returns whether it is a palindrome using only mathematical operations (Hint: think of modulo (\%) and how you can 'reverse' a number). You can assume inputs will be $\geq{0}$ (unsigned), and all inputs will fit inside 32 bits and will not cause overflow. You can include a \texttt{testNums} array in \texttt{main()}.
+
+\subsection{Task in LaTeX}
+Document your program using:
+\begin{itemize}
+    \item Separate code blocks for:
+    \begin{enumerate}
+        \item the top of your C code (libraries used)
+        \item your isPalindrome() function
+        \item your main() function
+    \end{enumerate}
+    \item An itemized list below your isPalindrome() code block explaining your approach.
+    \item An enumerated list below the main() code block which explains your choice of test strings. Have you covered the necessary edge/main cases? 
+    \item A table showing all of your test cases. There should be columns for input, expected output, actual output, and explanations (if necessary).
+    \item A figure which contains a screenshot of your code output (test case results) in the terminal
+\end{itemize}
+Make sure you compile your .tex file with \texttt{pdflatex yourFile.tex} (or with the VS Code extension). You can show me your final PDF.
+\end{document}
