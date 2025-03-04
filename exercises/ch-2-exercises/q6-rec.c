@@ -4,15 +4,14 @@
 
 // assume 64-bit ans (ans <= 2^63 - 1)
 // we need a type with 8 bytes of data
-// int             - at least 2 bytes, usually 4 bytes on modern CPU
-// long (int)      - at least 4 bytes, usually 8 bytes on Linux/macOS
-// long long (int) - at least 8 bytes, "safe" across OS
+// int             - at least 2 bytes, usually 4 bytes (32-bit) on modern CPU
+// long (int)      - at least 4 bytes, usually 8 bytes (64-bit) on Linux/macOS
+// long long (int) - at least 8 bytes, "safe" 64-bit across OS, sometimes 128-bit
 
 // on most systems, long is sufficient
 // but to be safe across different OS, we can use long long
 // or use fixed-width, uint64_t from <stdint.h>
 unsigned long long tribonacci(const int n) {
-    unsigned long long ans = 0;
     // base case
     if (n <= 0)
         return 0;
