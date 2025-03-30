@@ -1,0 +1,145 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage[margin=1in]{geometry}
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\lstdefinestyle{latexstyle}{
+	language={[LaTeX]TeX},
+	basicstyle=\ttfamily,
+	backgroundcolor=\color{blue!5},
+	keywordstyle=\color{blue},
+	commentstyle=\color{codegreen},
+	stringstyle=\color{red},
+	showstringspaces=false,
+	breaklines=true,
+	frame=single,
+	rulecolor=\color{lightgray!35},
+	numbers=none,
+	numberstyle=\tiny,
+	numbersep=5pt,
+	tabsize=1,
+	morekeywords={documentclass, usepackage, begin, end},
+}
+\hypersetup{
+colorlinks=true,
+linkcolor=blue,
+filecolor=magenta,
+urlcolor=cyan,
+}
+\lstset{
+basicstyle=\ttfamily\small,
+keywordstyle=\color{blue},
+commentstyle=\color{green!60!black},
+stringstyle=\color{red},
+breaklines=true,
+frame=single,
+showstringspaces=false
+}
+\title{Linked List \& Hashing Answers}
+\date{\today}
+\begin{document}
+\maketitle
+
+\section{Linked List}
+\begin{enumerate}
+    \item Doubly Linked List struct:
+    \begin{lstlisting}[language=C]
+    struct ListNode {
+    	int val;
+        struct ListNode *prev;
+    	struct ListNode *next;
+    };
+
+    \end{lstlisting}
+
+    \item printList() function:
+    \begin{lstlisting}[language=C]
+    void printList(struct ListNode *head) {
+        struct ListNode *curr = head;
+        while (curr != NULL) {
+            printf("%d -> ",curr->val);
+            curr = curr->next;
+        }
+        printf("NULL\n");
+    }
+    \end{lstlisting}
+    
+    \item swap() function:
+    \begin{lstlisting}[language=C]
+    // swap first two nodes
+    struct ListNode* swap(struct ListNode *head) {
+        // assuming size >=2
+        struct ListNode* next = head->next;
+        struct ListNode* nextnext = next->next;
+    
+        // modify connections
+        head->next = nextnext;
+        next->next = head;
+        return next;
+    }
+    \end{lstlisting}
+
+\end{enumerate}
+
+\section{Hashing}
+\begin{enumerate}
+    \item Checking if an element exists has average complexity of \textbf{O(1)}, also known as constant time. This requires the assumption that the hashFunction spreads elements out mostly uniformly (so there are minimal collisions) and the hashFunction is efficient (using bitwise operations/modulo) so that keys can be hashed in constant time. The steps for retrieval are:
+    \begin{enumerate}
+        \item hash the key to give us a hash code -- assume hashFunction is O(1)
+        \item get the index from the hash code -- using modulo/bitwise, O(1)
+        \item access the element at that index -- array access is O(1)
+    \end{enumerate}
+    Thus, HashMap search() is O(1) overall under these assumptions.
+
+    \item HashMap collisions occur when two different keys hash to the same index in the hash table. To handle collisions, we can use \textbf{separate chaining}. Each index in our hash table stores a \textbf{linked list} of entries. When a collision occurs, the new entry is added to the list at that index. Retrieval involves checking the list at that index, which can be O(N) in the worst case (imagine if every key hashes to the same index). Average performance can still remain O(1).
+
+    \item HashMap insert():
+    \begin{lstlisting}[language=C]
+    #include <stdio.h>
+    #include <stdlib.h>
+    
+    #define TABLE_SIZE 10
+    
+    typedef struct {
+        int key;
+        int value;
+    } HashEntry;
+    
+    HashEntry *hashTable[TABLE_SIZE] = {NULL};
+    
+    // Simple hash function
+    int hashFunction(int key) {
+        return key % TABLE_SIZE;
+    }
+    
+    void insert(int key, int value) {
+        // 1) hash the key
+        int index = hashFunction(key);
+    
+        // 2) create a HashMap entry with appropriate key and value
+        HashEntry *entry = (HashEntry *)malloc(sizeof(HashEntry));
+        entry->key = key;
+        entry->value = value;
+    
+        // 3) store the entry in the HashMap
+        if (hashTable[index] == NULL) {
+            // no collision, simply store the entry
+            hashTable[index] = entry;
+        } else {
+            // handle collision here (but we won't in this example):
+            hashTable[index] = entry;
+        }
+    }    
+    \end{lstlisting}
+    Again, assuming a good hashFunction and appropriate size of hash table, insertion is \textbf{O(1)}, constant-time. Performance can degrade to \textbf{O(N)} when there are frequent collisions, causing multiple entries to be stored in the same table index. This increases the time taken to find an entry or insert a new one.
+\end{enumerate}
+\end{document}
