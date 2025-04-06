@@ -15,20 +15,6 @@ void print(struct ListNode *head) {
 }
 
 struct ListNode* reverseList(struct ListNode *head) {
-	struct ListNode* store;
-    struct ListNode* prev = NULL;
-    struct ListNode* ntt = head;
-
-	while (ntt != NULL) {
-        store = ntt->next;
-        ntt->next=prev;
-        prev=ntt;
-        ntt=store;
-    }
-    return prev;
-}
-
-struct ListNode* reverseList3(struct ListNode *head) {
 	struct ListNode* prev = NULL;
     // Reverse each node while we traverse
     // (set next to point to prev) 
